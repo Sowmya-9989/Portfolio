@@ -1,0 +1,1240 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Venna Sri Sowmya | Python Backend Developer (FastAPI)</title>
+  <meta name="description" content="Portfolio of Venna Sri Sowmya - Python Backend Developer specializing in FastAPI, PostgreSQL, Redis, Celery, and AI integrations.">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+
+  <style>
+    /* =========================================================
+       DESIGN SYSTEM (black + crimson glow, navy + lavender grey)
+       ========================================================= */
+    :root {
+      --bg-core: #050507;
+      --bg-surface: #0b0b12;
+      --bg-card: #11121d;
+
+      --navy-deep: #12142b;
+      --navy: #1e2145;
+      --navy-light: #343861;
+      --lavender: #8d90ad;
+      --lavender-soft: #b9bbd2;
+
+      --border-subtle: #1a1b2c;
+      --border-distinct: #2c2e4c;
+
+      --text-primary: #f3f3f7;
+      --text-muted: #a3a5bd;
+      --text-dim: #6b6d8a;
+
+      --accent: #fb7185;
+      --accent-strong: #e11d48;
+      --accent-deep: #9f1239;
+      --accent-subtle: rgba(225, 29, 72, 0.14);
+      --accent-glow: rgba(190, 18, 60, 0.55);
+
+      --font-heading: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      --font-body: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      --font-mono: 'JetBrains Mono', monospace;
+
+      --container-max: 1280px;
+      --radius-sm: 6px;
+      --radius-md: 10px;
+      --radius-lg: 16px;
+      --ease-smooth: cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html {
+      scroll-behavior: smooth;
+      scroll-padding-top: 80px;
+      background-color: var(--bg-core);
+      color: var(--text-primary);
+      font-family: var(--font-body);
+    }
+
+    body {
+      background-color: var(--bg-core);
+      color: var(--text-primary);
+      line-height: 1.6;
+      overflow-x: hidden;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    a { color: inherit; text-decoration: none; }
+    button { border: none; background: none; font-family: inherit; cursor: pointer; }
+
+    .container { width: 100%; max-width: var(--container-max); margin: 0 auto; padding: 0 24px; }
+
+    /* =========================================================
+       1. WELCOME SCREEN
+       ========================================================= */
+    .welcome-screen {
+      position: fixed;
+      inset: 0;
+      z-index: 9999;
+      background:
+        radial-gradient(ellipse 60% 55% at 0% 100%, var(--accent-glow) 0%, transparent 65%),
+        linear-gradient(115deg, #000000 0%, #0a0a14 35%, var(--navy-deep) 60%, var(--navy) 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 32px 24px;
+      overflow: hidden;
+      transition: opacity 0.45s var(--ease-smooth), transform 0.45s var(--ease-smooth);
+    }
+
+    .welcome-screen.is-exiting { opacity: 0; transform: translateY(-20px); pointer-events: none; }
+
+    .welcome-diagonal {
+      position: absolute;
+      top: -10%;
+      right: -25%;
+      width: 70%;
+      height: 130%;
+      background: linear-gradient(160deg, rgba(141, 144, 173, 0.55), rgba(141, 144, 173, 0.22));
+      clip-path: polygon(30% 0, 100% 0, 100% 100%, 0 100%);
+      opacity: 0.28;
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    .welcome-grid-bg {
+      position: absolute;
+      inset: 0;
+      background-image: linear-gradient(var(--border-subtle) 1px, transparent 1px),
+                        linear-gradient(90deg, var(--border-subtle) 1px, transparent 1px);
+      background-size: 44px 44px;
+      opacity: 0.3;
+      pointer-events: none;
+      z-index: 2;
+    }
+
+    .welcome-container {
+      position: relative;
+      z-index: 3;
+      width: 100%;
+      max-width: 900px;
+      display: flex;
+      flex-direction: column;
+      gap: 32px;
+    }
+
+    .welcome-topbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding-bottom: 18px;
+      border-bottom: 1px solid var(--border-distinct);
+    }
+
+    .welcome-role-eyebrow {
+      font-family: var(--font-mono);
+      font-size: 0.82rem;
+      letter-spacing: 0.12em;
+      color: var(--accent);
+      margin-bottom: 14px;
+      font-weight: 500;
+    }
+
+    .welcome-title {
+      font-family: var(--font-heading);
+      font-size: clamp(2.4rem, 6.5vw, 4.4rem);
+      font-weight: 700;
+      line-height: 1.05;
+      letter-spacing: -0.03em;
+      text-transform: uppercase;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .outline-text { color: var(--lavender-soft); font-weight: 300; letter-spacing: -0.02em; }
+
+    .welcome-intro-desc {
+      font-size: clamp(0.98rem, 1.8vw, 1.15rem);
+      color: var(--lavender-soft);
+      max-width: 620px;
+      margin-top: 18px;
+      line-height: 1.65;
+    }
+
+    .welcome-footer {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 20px;
+      padding-top: 28px;
+      border-top: 1px solid var(--border-distinct);
+    }
+
+    .btn-enter {
+      background-color: #ffffff;
+      color: #050507;
+      font-weight: 600;
+      font-size: 0.92rem;
+      padding: 14px 30px;
+      border-radius: var(--radius-sm);
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      letter-spacing: 0.02em;
+      transition: all 0.2s var(--ease-smooth);
+    }
+
+    .btn-enter:hover { background-color: var(--accent-strong); color: #fff; transform: translateY(-2px); }
+    .arrow-sym { transition: transform 0.2s ease; }
+    .btn-enter:hover .arrow-sym { transform: translateX(4px); }
+
+    .welcome-quick-links { display: flex; gap: 20px; font-family: var(--font-mono); font-size: 0.85rem; }
+    .quick-link { color: var(--lavender-soft); transition: color 0.2s ease; }
+    .quick-link:hover { color: var(--accent); }
+
+    /* =========================================================
+       2. MAIN PORTFOLIO
+       ========================================================= */
+    .main-portfolio { opacity: 1; transition: opacity 0.35s ease; position: relative; }
+    .main-portfolio.is-hidden { display: none; opacity: 0; }
+
+    .site-header {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background-color: rgba(5, 5, 7, 0.88);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border-subtle);
+    }
+
+    .header-inner {
+      max-width: var(--container-max);
+      margin: 0 auto;
+      padding: 0 24px;
+      height: 68px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .brand-logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-family: var(--font-heading);
+      font-weight: 700;
+      font-size: 1.02rem;
+      letter-spacing: -0.01em;
+    }
+
+    .brand-badge {
+      width: 28px;
+      height: 28px;
+      border-radius: var(--radius-sm);
+      background: linear-gradient(135deg, var(--accent-deep), var(--navy));
+      border: 1px solid var(--border-distinct);
+      color: #fff;
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+      display: grid;
+      place-items: center;
+    }
+
+    .dot-accent { color: var(--accent-strong); }
+
+    .site-nav { display: flex; align-items: center; gap: 24px; }
+    .nav-item { font-size: 0.88rem; color: var(--text-muted); font-weight: 500; transition: color 0.2s ease; }
+    .nav-item:hover, .nav-item.active { color: #fff; }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 500;
+      border-radius: var(--radius-sm);
+      transition: all 0.2s var(--ease-smooth);
+    }
+
+    .btn-primary { background-color: #f3f3f7; color: #050507; padding: 11px 22px; font-size: 0.9rem; font-weight: 600; }
+    .btn-primary:hover { background-color: var(--accent-strong); color: #fff; transform: translateY(-2px); }
+
+    .btn-outline {
+      background-color: rgba(30, 33, 69, 0.45);
+      border: 1px solid var(--border-distinct);
+      color: var(--text-primary);
+      padding: 11px 22px;
+      font-size: 0.9rem;
+    }
+    .btn-outline:hover { border-color: var(--accent-strong); color: var(--accent); transform: translateY(-2px); }
+
+    .btn-sm { padding: 7px 16px; font-size: 0.82rem; }
+    .btn-lg { padding: 13px 26px; font-size: 0.94rem; }
+
+    /* HERO */
+    .hero-section {
+      position: relative;
+      padding: 84px 0 60px;
+      background:
+        radial-gradient(ellipse 55% 70% at 85% 10%, var(--accent-glow) 0%, transparent 70%),
+        radial-gradient(ellipse 45% 50% at 0% 100%, rgba(52, 56, 97, 0.55) 0%, transparent 70%);
+      overflow: hidden;
+    }
+
+    .hero-grid {
+      display: grid;
+      grid-template-columns: 1.25fr 0.75fr;
+      gap: 48px;
+      align-items: center;
+      position: relative;
+      z-index: 2;
+    }
+
+    .hero-title {
+      font-family: var(--font-heading);
+      font-size: clamp(2.2rem, 4.6vw, 3.5rem);
+      font-weight: 700;
+      line-height: 1.1;
+      letter-spacing: -0.03em;
+      margin-bottom: 18px;
+    }
+
+    .hero-lead { font-size: 1.02rem; color: var(--lavender-soft); line-height: 1.68; margin-bottom: 28px; }
+
+    .btn-cluster { display: flex; flex-wrap: wrap; gap: 12px; }
+
+    .portrait-wrapper { max-width: 310px; margin: 0 auto; }
+
+    .portrait-card {
+      position: relative;
+      aspect-ratio: 1/1;
+      background-color: #ffffff;
+      border-radius: 50%;
+      padding: 0;
+      overflow: hidden;
+      border: 3px solid transparent;
+      background-image: linear-gradient(#fff, #fff), linear-gradient(135deg, var(--accent-strong), var(--navy-light) 60%, var(--lavender-soft));
+      background-origin: border-box;
+      background-clip: padding-box, border-box;
+      box-shadow: 0 16px 40px rgba(0, 0, 0, 0.65), 0 0 70px rgba(190, 18, 60, 0.4);
+    }
+
+    .portrait-img { width: 100%; height: 100%; object-fit: cover; display: block; border-radius: 50%; }
+
+    .portrait-fallback {
+      display: none;
+      border-radius: 50%;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100%;
+      background: linear-gradient(135deg, var(--navy-deep), var(--accent-deep));
+    }
+
+    .fallback-monogram { font-family: var(--font-heading); font-size: 3.5rem; font-weight: 700; color: #fff; }
+    .fallback-caption { font-family: var(--font-mono); font-size: 0.8rem; color: var(--lavender-soft); }
+
+    .portrait-card-footer { display: flex; justify-content: space-between; padding: 14px 8px 0; }
+
+    /* MARQUEE */
+    .marquee-wrapper {
+      margin: 0;
+      border-top: 1px solid var(--border-subtle);
+      border-bottom: 1px solid var(--border-subtle);
+      background: linear-gradient(90deg, var(--bg-surface), var(--navy-deep), var(--bg-surface));
+      overflow: hidden;
+      user-select: none;
+      padding: 14px 0;
+    }
+
+    .marquee-track { display: flex; width: max-content; will-change: transform; animation: scrollMarquee 34s linear infinite; }
+    .marquee-wrapper:hover .marquee-track { animation-play-state: paused; }
+    .marquee-items { display: flex; align-items: center; gap: 22px; padding-right: 22px; }
+
+    .m-item {
+      font-family: var(--font-mono);
+      font-size: 0.88rem;
+      font-weight: 500;
+      color: var(--lavender-soft);
+      letter-spacing: 0.02em;
+      white-space: nowrap;
+    }
+
+    .m-bullet { color: var(--accent-strong); font-size: 0.7rem; }
+
+    @keyframes scrollMarquee { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
+
+    /* SECTIONS */
+    .section-container { padding: 80px 0; border-bottom: 1px solid var(--border-subtle); }
+    .section-tag { margin-bottom: 40px; }
+
+    .tag-number {
+      font-family: var(--font-mono);
+      font-size: 0.78rem;
+      color: var(--accent);
+      letter-spacing: 0.1em;
+      display: block;
+      margin-bottom: 6px;
+    }
+
+    .tag-title {
+      font-family: var(--font-heading);
+      font-size: clamp(1.8rem, 3.4vw, 2.5rem);
+      font-weight: 700;
+      letter-spacing: -0.02em;
+    }
+
+    .tag-caption { color: var(--text-muted); margin-top: 6px; font-size: 0.95rem; }
+
+    /* ABOUT */
+    #about {
+      background: linear-gradient(115deg, var(--bg-core) 0%, var(--navy-deep) 55%, var(--navy) 100%);
+    }
+
+    .about-split { display: grid; grid-template-columns: 1.35fr 1fr; gap: 44px; align-items: start; }
+    .about-text { color: var(--text-muted); display: flex; flex-direction: column; gap: 16px; font-size: 0.98rem; }
+    .text-highlight { color: var(--text-primary); font-size: 1.1rem; line-height: 1.6; }
+    .about-stats { display: grid; gap: 14px; }
+
+    .stat-box {
+      background-color: rgba(5, 5, 7, 0.55);
+      border: 1px solid var(--border-distinct);
+      border-left: 3px solid var(--accent-strong);
+      border-radius: var(--radius-sm);
+      padding: 18px 22px;
+    }
+
+    .stat-prefix { display: block; font-family: var(--font-mono); font-size: 0.7rem; color: var(--lavender); letter-spacing: 0.1em; }
+    .stat-main { display: block; font-family: var(--font-heading); font-size: 1.55rem; font-weight: 700; color: var(--text-primary); margin: 4px 0; letter-spacing: -0.01em; }
+    .stat-sub { font-size: 0.84rem; color: var(--text-muted); }
+
+    /* EXPERIENCE */
+    .experience-list { display: flex; flex-direction: column; gap: 24px; }
+
+    .exp-card {
+      display: grid;
+      grid-template-columns: 270px 1fr;
+      gap: 32px;
+      background-color: var(--bg-surface);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-md);
+      padding: 28px;
+      transition: border-color 0.2s ease;
+    }
+    .exp-card:hover { border-color: var(--accent-deep); }
+
+    .exp-sidebar { display: flex; flex-direction: column; gap: 4px; }
+    .exp-dates { font-family: var(--font-mono); font-size: 0.8rem; color: var(--accent); }
+    .exp-firm { font-weight: 600; font-size: 1.02rem; color: var(--text-primary); }
+    .exp-city { font-size: 0.82rem; color: var(--text-dim); }
+    .exp-title { font-family: var(--font-heading); font-size: 1.2rem; font-weight: 600; margin-bottom: 14px; letter-spacing: -0.01em; }
+
+    .bullet-list { padding-left: 18px; color: var(--text-muted); display: flex; flex-direction: column; gap: 8px; font-size: 0.93rem; }
+    .bullet-list li::marker { color: var(--accent-strong); }
+
+    /* PROJECTS */
+    .projects-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
+
+    .project-box {
+      background: linear-gradient(160deg, var(--bg-surface), var(--navy-deep));
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-md);
+      padding: 28px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      transition: transform 0.2s var(--ease-smooth), border-color 0.2s var(--ease-smooth), box-shadow 0.2s var(--ease-smooth);
+    }
+
+    .project-box:hover { transform: translateY(-3px); border-color: var(--accent-deep); box-shadow: 0 12px 36px rgba(159, 18, 57, 0.2); }
+
+    .project-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
+    .project-name { font-family: var(--font-heading); font-size: 1.25rem; font-weight: 600; margin-bottom: 4px; letter-spacing: -0.015em; }
+    .project-category { font-size: 0.85rem; color: var(--accent); font-family: var(--font-mono); margin-bottom: 12px; }
+
+    .feature-strip { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 16px; }
+
+    .f-pill {
+      font-family: var(--font-mono);
+      font-size: 0.72rem;
+      background-color: rgba(52, 56, 97, 0.45);
+      padding: 3px 9px;
+      border-radius: var(--radius-sm);
+      color: var(--lavender-soft);
+    }
+
+    .project-tech-row { margin-top: 22px; padding-top: 16px; border-top: 1px solid var(--border-distinct); display: flex; flex-wrap: wrap; gap: 8px; }
+    .tech-tag { font-family: var(--font-mono); font-size: 0.76rem; color: var(--accent); }
+
+    /* SKILLS */
+    .skills-card-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; }
+
+    .skill-category {
+      background-color: var(--bg-surface);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-sm);
+      padding: 20px;
+    }
+
+    .skill-category h4 { font-family: var(--font-heading); font-size: 0.94rem; font-weight: 600; margin-bottom: 12px; color: #fff; }
+
+    .tags-wrap { display: flex; flex-wrap: wrap; gap: 7px; }
+
+    .pill-skill {
+      font-family: var(--font-mono);
+      font-size: 0.78rem;
+      padding: 4px 10px;
+      background-color: var(--bg-core);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-sm);
+      color: var(--text-muted);
+    }
+
+    .pill-skill.active {
+      background-color: var(--accent-subtle);
+      border-color: rgba(225, 29, 72, 0.4);
+      color: #fda4af;
+    }
+
+    /* EDUCATION */
+    #education { background: linear-gradient(245deg, var(--bg-core) 0%, var(--navy-deep) 70%, var(--navy) 100%); }
+
+    .edu-layout { display: grid; grid-template-columns: 1.25fr 1fr; gap: 24px; }
+
+    .edu-main-card, .edu-side-card {
+      background-color: rgba(5, 5, 7, 0.6);
+      border: 1px solid var(--border-distinct);
+      border-radius: var(--radius-md);
+      padding: 28px;
+    }
+
+    .card-meta-line { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+    .card-headline { font-family: var(--font-heading); font-size: 1.18rem; font-weight: 600; margin-bottom: 4px; letter-spacing: -0.01em; }
+    .card-subhead { color: var(--text-muted); font-size: 0.9rem; margin-bottom: 8px; }
+    .cgpa-highlight { font-family: var(--font-mono); font-size: 0.85rem; color: var(--accent); margin-bottom: 10px; }
+    .card-desc { color: var(--text-muted); font-size: 0.9rem; }
+    .divider-line { height: 1px; background-color: var(--border-distinct); margin: 24px 0; }
+
+    .cert-items { list-style: none; display: flex; flex-direction: column; gap: 14px; }
+    .cert-items li { display: flex; gap: 10px; align-items: flex-start; font-size: 0.9rem; }
+    .cert-icon { color: var(--accent-strong); font-size: 0.72rem; margin-top: 4px; }
+    .cert-provider { display: block; font-size: 0.78rem; color: var(--lavender); font-family: var(--font-mono); margin-top: 2px; }
+
+    /* CONTACT */
+    .contact-card {
+      position: relative;
+      background: linear-gradient(120deg, #000 0%, var(--navy-deep) 60%, var(--navy) 100%);
+      border: 1px solid var(--border-distinct);
+      border-radius: var(--radius-lg);
+      padding: 56px 40px;
+      overflow: hidden;
+    }
+
+    .contact-glow {
+      position: absolute;
+      bottom: -45%;
+      left: -5%;
+      width: 560px;
+      height: 560px;
+      background: radial-gradient(circle, var(--accent-glow) 0%, transparent 68%);
+      filter: blur(50px);
+      pointer-events: none;
+    }
+
+    .contact-inner { position: relative; z-index: 2; max-width: 760px; }
+    .contact-title { font-family: var(--font-heading); font-size: clamp(1.8rem, 3.6vw, 2.7rem); font-weight: 700; line-height: 1.15; margin-bottom: 12px; letter-spacing: -0.02em; }
+    .contact-subtitle { font-size: 1.05rem; color: var(--lavender-soft); margin-bottom: 28px; }
+    .contact-buttons { display: flex; flex-wrap: wrap; gap: 12px; }
+
+    /* BADGES */
+    .status-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 5px 12px;
+      background-color: rgba(30, 33, 69, 0.6);
+      border: 1px solid var(--border-distinct);
+      border-radius: 9999px;
+      font-size: 0.8rem;
+      color: var(--lavender-soft);
+      font-family: var(--font-mono);
+    }
+
+    .dot-live { width: 7px; height: 7px; border-radius: 50%; background-color: #22c55e; box-shadow: 0 0 8px rgba(34, 197, 94, 0.6); }
+
+    .mono-dim { font-family: var(--font-mono); font-size: 0.74rem; color: var(--lavender); }
+
+    .badge-dim {
+      font-family: var(--font-mono);
+      font-size: 0.7rem;
+      padding: 3px 8px;
+      background-color: var(--bg-card);
+      border: 1px solid var(--border-distinct);
+      color: var(--lavender);
+      border-radius: var(--radius-sm);
+    }
+
+    .badge-accent {
+      font-family: var(--font-mono);
+      font-size: 0.7rem;
+      padding: 3px 8px;
+      background-color: var(--accent-subtle);
+      border: 1px solid rgba(225, 29, 72, 0.4);
+      color: #fda4af;
+      border-radius: var(--radius-sm);
+    }
+
+    .mb-3 { margin-bottom: 12px; }
+    .mb-4 { margin-bottom: 16px; }
+
+    /* FOOTER */
+    .site-footer { padding: 28px 0; border-top: 1px solid var(--border-subtle); font-size: 0.82rem; color: var(--text-dim); }
+    .footer-content { display: flex; justify-content: space-between; align-items: center; }
+    .to-top-btn { font-family: var(--font-mono); color: var(--lavender); }
+    .to-top-btn:hover { color: var(--accent); }
+
+    /* RESPONSIVE */
+    @media (max-width: 960px) {
+      .hero-grid { grid-template-columns: 1fr; gap: 32px; }
+      .hero-right { order: -1; }
+      .projects-grid, .about-split, .edu-layout { grid-template-columns: 1fr; }
+      .skills-card-grid { grid-template-columns: repeat(2, 1fr); }
+      .exp-card { grid-template-columns: 1fr; gap: 14px; }
+    }
+
+    @media (max-width: 680px) {
+      .site-nav { display: none; }
+      .skills-card-grid { grid-template-columns: 1fr; }
+      .contact-card { padding: 32px 18px; }
+      .contact-buttons { flex-direction: column; }
+      .contact-buttons .btn { width: 100%; }
+      .welcome-topbar, .welcome-footer { flex-direction: column; align-items: flex-start; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      html { scroll-behavior: auto; }
+      .marquee-track { animation: none; transform: none; }
+      .welcome-screen { transition: none; }
+      .btn, .project-box { transition: none; }
+    }
+
+    /* =========================================================
+       DESKTOP WEBSITE LAYOUT
+       ========================================================= */
+    .container, .header-inner { padding-left: 40px; padding-right: 40px; }
+
+    @media (min-width: 1024px) {
+      .site-nav { gap: 34px; }
+      .nav-item { font-size: 0.94rem; }
+
+      .welcome-container { max-width: 1180px; gap: 44px; }
+      .welcome-title { font-size: clamp(3.4rem, 8vw, 7rem); }
+      .welcome-intro-desc { font-size: 1.2rem; max-width: 720px; }
+
+      .hero-section { min-height: calc(100vh - 68px); display: flex; align-items: center; padding: 70px 0; }
+      .hero-section .container { width: 100%; }
+      .hero-grid { grid-template-columns: 1.2fr 0.8fr; gap: 90px; }
+      .hero-title { font-size: clamp(2.8rem, 4.6vw, 4.4rem); }
+      .hero-lead { font-size: 1.15rem; max-width: 640px; }
+      .portrait-wrapper { max-width: 420px; }
+
+      .section-container { padding: 112px 0; }
+      .tag-title { font-size: clamp(2.2rem, 3.4vw, 3rem); }
+      .about-split { gap: 80px; }
+      .text-highlight { font-size: 1.25rem; }
+      .about-text { font-size: 1.05rem; }
+      .exp-card { grid-template-columns: 320px 1fr; gap: 56px; padding: 36px; }
+      .project-box { padding: 36px; }
+      .projects-grid { gap: 32px; }
+      .contact-card { padding: 84px 72px; }
+    }
+
+    @media (min-width: 1200px) {
+      .skills-card-grid { grid-template-columns: repeat(4, 1fr); }
+    }
+
+    @media (max-width: 680px) {
+      .container, .header-inner { padding-left: 20px; padding-right: 20px; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- 1. WELCOME SCREEN -->
+  <div id="welcome-screen" class="welcome-screen" role="region" aria-label="Welcome Screen">
+    <div class="welcome-diagonal" aria-hidden="true"></div>
+    <div class="welcome-grid-bg" aria-hidden="true"></div>
+
+    <div class="welcome-container">
+      <div class="welcome-topbar">
+        <div class="status-pill">
+          <span class="dot-live"></span>
+          <span>AVAILABLE FOR BACKEND ROLES</span>
+        </div>
+        <span class="mono-dim">HYDERABAD, INDIA</span>
+      </div>
+
+      <div class="welcome-main">
+        <p class="welcome-role-eyebrow">SOFTWARE DEVELOPER &middot; FASTAPI SPECIALIST</p>
+        <h1 class="welcome-title">
+          <span>VENNA SRI</span>
+          <span class="outline-text">SOWMYA</span>
+        </h1>
+        <p class="welcome-intro-desc">
+          I build, debug, and secure FastAPI services on PostgreSQL, Redis, and Celery, with JWT and RBAC access control, integrating OCR and AI APIs into backend workflows.
+        </p>
+      </div>
+
+      <div class="welcome-footer">
+        <button id="enter-btn" class="btn btn-enter" type="button">
+          <span>ENTER PORTFOLIO</span>
+          <span class="arrow-sym">&rarr;</span>
+        </button>
+
+        <div class="welcome-quick-links">
+          <a href="https://github.com/Sowmya-9989/" target="_blank" rel="noopener" class="quick-link">GitHub &nearr;</a>
+          <a href="https://www.linkedin.com/in/venna-sri-sowmya-7bbb7731a/" target="_blank" rel="noopener" class="quick-link">LinkedIn &nearr;</a>
+          <a href="mailto:vennasowmya009@gmail.com" class="quick-link">Email &nearr;</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 2. MAIN PORTFOLIO -->
+  <div id="main-portfolio" class="main-portfolio is-hidden">
+
+    <header class="site-header">
+      <div class="header-inner">
+        <a href="#hero" class="brand-logo">
+          <span class="brand-badge">VS</span>
+          <span class="brand-name">SOWMYA<span class="dot-accent">.</span></span>
+        </a>
+
+        <nav class="site-nav" aria-label="Main Navigation">
+          <a href="#about" class="nav-item">About</a>
+          <a href="#experience" class="nav-item">Experience</a>
+          <a href="#projects" class="nav-item">Projects</a>
+          <a href="#skills" class="nav-item">Skills</a>
+          <a href="#education" class="nav-item">Education</a>
+          <a href="#contact" class="btn btn-sm btn-primary">Hire Me</a>
+        </nav>
+      </div>
+    </header>
+
+    <main>
+      <!-- HERO -->
+      <section id="hero" class="hero-section">
+        <div class="container hero-grid">
+          <div class="hero-left">
+            <div class="status-pill mb-4">
+              <span class="dot-live"></span>
+              <span>Open to Python and FastAPI backend roles</span>
+            </div>
+
+            <h1 class="hero-title">
+              Engineering resilient backend systems &amp; intelligent APIs.
+            </h1>
+
+            <p class="hero-lead">
+              I build, debug, and secure FastAPI services on PostgreSQL, Redis, and Celery, with JWT and RBAC access control, and I integrate OCR and AI APIs into backend workflows.
+            </p>
+
+            <div class="btn-cluster">
+              <a href="mailto:vennasowmya009@gmail.com" class="btn btn-primary">Get In Touch</a>
+              <a href="https://github.com/Sowmya-9989/" target="_blank" rel="noopener" class="btn btn-outline">GitHub &nearr;</a>
+              <a href="https://www.linkedin.com/in/venna-sri-sowmya-7bbb7731a/" target="_blank" rel="noopener" class="btn btn-outline">LinkedIn &nearr;</a>
+            </div>
+          </div>
+          <div class="hero-right">
+            <div class="portrait-wrapper">
+              <div class="portrait-card">
+                <img
+                src="round pic.png"
+                alt="Portrait of Venna Sri Sowmya"
+                 class="portrait-img"
+                 onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                 <div class="portrait-fallback">
+                  <span class="fallback-monogram">VS</span>
+                  <span class="fallback-caption">Venna Sri Sowmya</span>
+                </div>
+              </div>
+              <div class="portrait-card-footer">
+                <span class="mono-dim">STATUS: BACKEND_DEVELOPER</span>
+                <span class="mono-dim">LOC: HYD_IN</span>
+               </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+      <!-- MARQUEE -->
+      <section class="marquee-wrapper" aria-hidden="true">
+        <div class="marquee-track">
+          <div class="marquee-items">
+            <span class="m-item">FastAPI</span><span class="m-bullet">&bull;</span>
+            <span class="m-item">Python</span><span class="m-bullet">&bull;</span>
+            <span class="m-item">REST APIs</span><span class="m-bullet">&bull;</span>
+            <span class="m-item">PostgreSQL</span><span class="m-bullet">&bull;</span>
+            <span class="m-item">SQLAlchemy</span><span class="m-bullet">&bull;</span>
+            <span class="m-item">JWT &amp; RBAC</span><span class="m-bullet">&bull;</span>
+            <span class="m-item">Redis</span><span class="m-bullet">&bull;</span>
+            <span class="m-item">Celery</span><span class="m-bullet">&bull;</span>
+            <span class="m-item">Pytest</span><span class="m-bullet">&bull;</span>
+            <span class="m-item">Gemini API</span><span class="m-bullet">&bull;</span>
+            <span class="m-item">Google Cloud Vision</span><span class="m-bullet">&bull;</span>
+            <span class="m-item">Git</span><span class="m-bullet">&bull;</span>
+          </div>
+          <div class="marquee-items">
+            <span class="m-item">FastAPI</span><span class="m-bullet">&bull;</span>
+            <span class="m-item">Python</span><span class="m-bullet">&bull;</span>
+            <span class="m-item">REST APIs</span><span class="m-bullet">&bull;</span>
+            <span class="m-item">PostgreSQL</span><span class="m-bullet">&bull;</span>
+            <span class="m-item">SQLAlchemy</span><span class="m-bullet">&bull;</span>
+            <span class="m-item">JWT &amp; RBAC</span><span class="m-bullet">&bull;</span>
+            <span class="m-item">Redis</span><span class="m-bullet">&bull;</span>
+            <span class="m-item">Celery</span><span class="m-bullet">&bull;</span>
+            <span class="m-item">Pytest</span><span class="m-bullet">&bull;</span>
+            <span class="m-item">Gemini API</span><span class="m-bullet">&bull;</span>
+            <span class="m-item">Google Cloud Vision</span><span class="m-bullet">&bull;</span>
+            <span class="m-item">Git</span><span class="m-bullet">&bull;</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- ABOUT -->
+      <section id="about" class="section-container">
+        <div class="container">
+          <div class="section-tag">
+            <span class="tag-number">01</span>
+            <h2 class="tag-title">ABOUT ME</h2>
+          </div>
+
+          <div class="about-split">
+            <div class="about-text">
+              <p class="text-highlight">
+                I'm a Python backend developer working with FastAPI on an enterprise healthcare Applicant Tracking System built on PostgreSQL, SQLAlchemy, Redis, and Celery.
+              </p>
+              <p>
+                My day-to-day is finding why something broke across the API, database, or authentication layers, and fixing it so recruitment workflows stay reliable.
+              </p>
+              <p>
+                Outside work, I build AI-enabled backend applications that combine OCR, classification models, and the Gemini API. Before software, I worked as a project analyst at APCRDA, which taught me to communicate clearly with engineers and stakeholders.
+              </p>
+            </div>
+
+            <div class="about-stats">
+              <div class="stat-box">
+                <span class="stat-prefix">PRIMARY WORK HORSE</span>
+                <span class="stat-main">FastAPI</span>
+                <span class="stat-sub">Main backend stack in production</span>
+              </div>
+              <div class="stat-box">
+                <span class="stat-prefix">SECURITY &amp; MULTI-TENANCY</span>
+                <span class="stat-main">JWT + RBAC</span>
+                <span class="stat-sub">Secure, multi-tenant API access</span>
+              </div>
+              <div class="stat-box">
+                <span class="stat-prefix">ACADEMIC FOUNDATION</span>
+                <span class="stat-main">8.21 / 10</span>
+                <span class="stat-sub">CGPA, B.Tech Information Technology</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- EXPERIENCE -->
+      <section id="experience" class="section-container">
+        <div class="container">
+          <div class="section-tag">
+            <span class="tag-number">02</span>
+            <h2 class="tag-title">EXPERIENCE</h2>
+            <p class="tag-caption">Where I've worked and what I've delivered.</p>
+          </div>
+
+          <div class="experience-list">
+            <article class="exp-card">
+              <div class="exp-sidebar">
+                <span class="exp-dates">Jun 2026 &mdash; Present</span>
+                <span class="exp-firm">Nextenti Tech Private Limited</span>
+                <span class="exp-city">Hyderabad, India</span>
+              </div>
+              <div class="exp-body">
+                <h3 class="exp-title">Python Backend Developer (FastAPI)</h3>
+                <ul class="bullet-list">
+                  <li>Support and troubleshoot Python/FastAPI backend services for a healthcare Applicant Tracking System.</li>
+                  <li>Resolve API, database, authentication, and recruitment workflow failures across data layers.</li>
+                  <li>Diagnose asynchronous task failures in Redis and Celery background processing.</li>
+                  <li>Ship fixes across frontend and backend through Git-based workflows.</li>
+                </ul>
+              </div>
+            </article>
+
+            <article class="exp-card">
+              <div class="exp-sidebar">
+                <span class="exp-dates">Jun 2025 &mdash; May 2026</span>
+                <span class="exp-firm">APCRDA</span>
+                <span class="exp-city">Andhra Pradesh, India</span>
+              </div>
+              <div class="exp-body">
+                <h3 class="exp-title">Project Associate Analyst</h3>
+                <ul class="bullet-list">
+                  <li>Coordinated with engineers, consultants, and stakeholders on project execution and progress tracking.</li>
+                  <li>Prepared reports and dashboards, and maintained project documentation for cross-team visibility.</li>
+                </ul>
+              </div>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <!-- PROJECTS -->
+      <section id="projects" class="section-container">
+        <div class="container">
+          <div class="section-tag">
+            <span class="tag-number">03</span>
+            <h2 class="tag-title">PROJECTS</h2>
+            <p class="tag-caption">A production FastAPI system I contribute to, and an AI-powered backend app I built.</p>
+          </div>
+
+          <div class="projects-grid">
+            <article class="project-box">
+              <div class="project-head">
+                <span class="mono-dim">PROJECT // 01</span>
+                <span class="badge-accent">ENTERPRISE CONTRIBUTION</span>
+              </div>
+              <div class="project-content">
+                <h3 class="project-name">ATS Healthcare Applicant Tracking System</h3>
+                <p class="project-category">Enterprise FastAPI application contribution</p>
+                <div class="feature-strip">
+                  <span class="f-pill">Requisitions</span>
+                  <span class="f-pill">Candidates</span>
+                  <span class="f-pill">Interviews</span>
+                  <span class="f-pill">Offers</span>
+                  <span class="f-pill">Preboarding</span>
+                </div>
+                <ul class="bullet-list">
+                  <li>Built and debugged REST APIs and relational data workflows.</li>
+                  <li>Implemented JWT authorization, RBAC, and multi-tenant access.</li>
+                  <li>Traced failures across API, database, and auth layers to restore end-to-end workflows.</li>
+                </ul>
+              </div>
+              <div class="project-tech-row">
+                <span class="tech-tag">FastAPI</span>
+                <span class="tech-tag">PostgreSQL</span>
+                <span class="tech-tag">Redis</span>
+                <span class="tech-tag">Celery</span>
+                <span class="tech-tag">JWT</span>
+                <span class="tech-tag">RBAC</span>
+              </div>
+            </article>
+
+            <article class="project-box">
+              <div class="project-head">
+                <span class="mono-dim">PROJECT // 02</span>
+                <span class="badge-accent">AI BACKEND PIPELINE</span>
+              </div>
+              <div class="project-content">
+                <h3 class="project-name">MedScript Clinical AI Workspace</h3>
+                <p class="project-category">AI-integrated backend project</p>
+                <div class="feature-strip">
+                  <span class="f-pill">Prescription OCR</span>
+                  <span class="f-pill">Symptom Prediction</span>
+                  <span class="f-pill">Gemini Assistant</span>
+                  <span class="f-pill">Consultations</span>
+                </div>
+                <ul class="bullet-list">
+                  <li>Prescription OCR with Google Cloud Vision and symptom-to-disease prediction using SVM and Random Forest models.</li>
+                  <li>Gemini-powered clinical assistance, medicine workflows, and doctor consultation features.</li>
+                  <li>Tested and scanned with Pytest and pip-audit.</li>
+                </ul>
+              </div>
+              <div class="project-tech-row">
+                <span class="tech-tag">Flask</span>
+                <span class="tech-tag">Gemini API</span>
+                <span class="tech-tag">Google Cloud Vision</span>
+                <span class="tech-tag">PostgreSQL</span>
+                <span class="tech-tag">Pytest</span>
+              </div>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <!-- SKILLS -->
+      <section id="skills" class="section-container">
+        <div class="container">
+          <div class="section-tag">
+            <span class="tag-number">04</span>
+            <h2 class="tag-title">TECHNICAL SKILLS</h2>
+            <p class="tag-caption">
+              Highlighted skills are ones I have used in my projects. The others are tools I am familiar with.
+            </p>
+          </div>
+
+          <div class="skills-card-grid">
+            <div class="skill-category">
+              <h4>API Development</h4>
+              <div class="tags-wrap">
+                <span class="pill-skill active">Python</span>
+                <span class="pill-skill active">FastAPI</span>
+                <span class="pill-skill active">REST APIs</span>
+                <span class="pill-skill active">Flask</span>
+              </div>
+            </div>
+
+            <div class="skill-category">
+              <h4>Databases &amp; ORM</h4>
+              <div class="tags-wrap">
+                <span class="pill-skill active">PostgreSQL</span>
+                <span class="pill-skill active">SQLAlchemy</span>
+                <span class="pill-skill active">SQL</span>
+                <span class="pill-skill active">SQLite</span>
+                <span class="pill-skill">MySQL</span>
+                <span class="pill-skill">Supabase</span>
+              </div>
+            </div>
+
+            <div class="skill-category">
+              <h4>Async Tasks &amp; Caching</h4>
+              <div class="tags-wrap">
+                <span class="pill-skill active">Celery</span>
+                <span class="pill-skill active">Redis</span>
+              </div>
+            </div>
+
+            <div class="skill-category">
+              <h4>Security</h4>
+              <div class="tags-wrap">
+                <span class="pill-skill active">JWT</span>
+                <span class="pill-skill active">RBAC</span>
+                <span class="pill-skill active">Multi-tenant access</span>
+                <span class="pill-skill active">pip-audit</span>
+              </div>
+            </div>
+
+            <div class="skill-category">
+              <h4>AI Integration</h4>
+              <div class="tags-wrap">
+                <span class="pill-skill active">Gemini API</span>
+                <span class="pill-skill active">Google Cloud Vision (OCR)</span>
+                <span class="pill-skill active">ML Classification</span>
+                <span class="pill-skill">Prompt Engineering</span>
+              </div>
+            </div>
+
+            <div class="skill-category">
+              <h4>Testing &amp; Debugging</h4>
+              <div class="tags-wrap">
+                <span class="pill-skill active">Pytest</span>
+                <span class="pill-skill active">Debugging</span>
+                <span class="pill-skill active">Software Testing</span>
+                <span class="pill-skill">Playwright (Fundamentals)</span>
+              </div>
+            </div>
+
+            <div class="skill-category">
+              <h4>Version Control &amp; CI</h4>
+              <div class="tags-wrap">
+                <span class="pill-skill active">Git</span>
+                
+                <span class="pill-skill">GitLab</span>
+                <span class="pill-skill">GitHub Actions</span>
+              </div>
+            </div>
+
+            <div class="skill-category">
+              <h4>Programming Fundamentals</h4>
+              <div class="tags-wrap">
+                <span class="pill-skill">OOP</span>
+                <span class="pill-skill">DSA</span>
+                <span class="pill-skill">DBMS</span>
+                <span class="pill-skill">SDLC</span>
+              </div>
+            </div>
+
+            <div class="skill-category">
+              <h4>Frontend (familiar)</h4>
+              <div class="tags-wrap">
+                <span class="pill-skill">React.js</span>
+                <span class="pill-skill">HTML5</span>
+                <span class="pill-skill">CSS3</span>
+                <span class="pill-skill">Vite</span>
+              </div>
+            </div>
+
+            <div class="skill-category">
+              <h4>AI Fundamentals</h4>
+              <div class="tags-wrap">
+                <span class="pill-skill">Machine Learning</span>
+                <span class="pill-skill">Prompt Engineering fundamentals</span>
+                <span class="pill-skill">Classification Models</span>
+                <span class="pill-skill">Generative AI</span>
+                <span class="pill-skill">LLM Fundamentals</span>
+              </div>
+            </div>
+
+            <div class="skill-category">
+              <h4>Code Quality &amp; Developer Tools</h4>
+              <div class="tags-wrap">
+               
+                <span class="pill-skill">Flake8</span>
+                <span class="pill-skill">API Testing</span>
+                <span class="pill-skill">Troubleshooting</span>
+              </div>
+            </div>
+            <div class="skill-category">
+              <h4>Developer Tools</h4>
+              <div class="tags-wrap">
+                <span class="pill-skill">VS Code</span>
+                <span class="pill-skill">GitLab</span>
+                <span class="pill-skill">GitHub Actions</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- EDUCATION & LEADERSHIP -->
+      <section id="education" class="section-container">
+        <div class="container">
+          <div class="section-tag">
+            <span class="tag-number">05</span>
+            <h2 class="tag-title">EDUCATION &amp; LEADERSHIP</h2>
+          </div>
+
+          <div class="edu-layout">
+            <div class="edu-main-card">
+              <div class="card-meta-line">
+                <span class="badge-dim">DEGREE</span>
+                <span class="mono-dim">2021 &mdash; 2025</span>
+              </div>
+              <h3 class="card-headline">B.Tech in Information Technology</h3>
+              <p class="card-subhead">Vijaya Institute of Technology, JNTUK</p>
+              <p class="cgpa-highlight">CGPA: <strong>8.21 / 10</strong></p>
+              <p class="card-desc">Coursework in OOP, data structures and algorithms, DBMS, and the software development life cycle.</p>
+
+              <div class="divider-line"></div>
+
+              <div class="card-meta-line">
+                <span class="badge-dim">LEADERSHIP</span>
+                <span class="mono-dim">2022 &mdash; 2025</span>
+              </div>
+              <h3 class="card-headline">Secretary, AIML Club</h3>
+              <p class="card-desc">Organized workshops, hackathons, and AI/ML awareness activities for students.</p>
+            </div>
+
+            <div class="edu-side-card">
+              <div class="card-meta-line">
+                <span class="badge-dim">CERTIFICATIONS</span>
+                <span class="mono-dim">VERIFIED</span>
+              </div>
+              <h3 class="card-headline mb-4">Credentials</h3>
+              <ul class="cert-items">
+                <li>
+                  <span class="cert-icon">&diams;</span>
+                  <div>
+                    <strong>Programming Essentials in Python</strong>
+                    <span class="cert-provider">Great Learning</span>
+                  </div>
+                </li>
+                <li>
+                  <span class="cert-icon">&diams;</span>
+                  <div>
+                    <strong>Machine Learning with Python: A Practical Introduction</strong>
+                    <span class="cert-provider">Professional Coursework</span>
+                  </div>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- CONTACT -->
+      <section id="contact" class="section-container contact-wrapper">
+        <div class="container">
+          <div class="contact-card">
+            <div class="contact-glow" aria-hidden="true"></div>
+            <div class="contact-inner">
+              <span class="status-pill mb-3">GET IN TOUCH</span>
+              <h2 class="contact-title">Let's build something reliable</h2>
+              <p class="contact-subtitle">
+                Hiring for a Python or FastAPI backend role? I'd love to hear from you.
+              </p>
+              <div class="contact-buttons">
+                <a class="btn btn-primary btn-lg" href="mailto:vennasowmya009@gmail.com">vennasowmya009@gmail.com</a>
+                <a class="btn btn-outline btn-lg" href="tel:+919391946228">+91 93919 46228</a>
+                <a class="btn btn-outline btn-lg" href="https://www.linkedin.com/in/venna-sri-sowmya-7bbb7731a/" target="_blank" rel="noopener">LinkedIn &nearr;</a>
+                <a class="btn btn-outline btn-lg" href="https://github.com/Sowmya-9989/" target="_blank" rel="noopener">GitHub &nearr;</a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      <div class="container footer-content">
+       
+        <a href="#hero" class="to-top-btn">BACK TO TOP &uarr;</a>
+      </div>
+    </footer>
+  </div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const enterBtn = document.getElementById('enter-btn');
+      const welcomeScreen = document.getElementById('welcome-screen');
+      const mainPortfolio = document.getElementById('main-portfolio');
+      const currentYear = document.getElementById('current-year');
+
+      if (currentYear) currentYear.textContent = new Date().getFullYear();
+
+      const openPortfolio = (instant = false) => {
+        if (instant) {
+          welcomeScreen.style.display = 'none';
+          mainPortfolio.classList.remove('is-hidden');
+          return;
+        }
+        welcomeScreen.classList.add('is-exiting');
+        setTimeout(() => {
+          welcomeScreen.style.display = 'none';
+          mainPortfolio.classList.remove('is-hidden');
+          window.scrollTo({ top: 0, behavior: 'smooth' });
+        }, 400);
+      };
+
+      if (window.location.hash && window.location.hash !== '#top') {
+        openPortfolio(true);
+      } else {
+        enterBtn?.addEventListener('click', () => openPortfolio(false));
+      }
+
+      const sections = document.querySelectorAll('section[id]');
+      const navItems = document.querySelectorAll('.nav-item');
+
+      const updateActiveNav = () => {
+        const scrollPosition = window.pageYOffset;
+        sections.forEach(sec => {
+          const top = sec.offsetTop - 120;
+          const height = sec.offsetHeight;
+          const id = sec.getAttribute('id');
+          if (scrollPosition >= top && scrollPosition < top + height) {
+            navItems.forEach(item => {
+              item.classList.remove('active');
+              if (item.getAttribute('href') === `#${id}`) item.classList.add('active');
+            });
+          }
+        });
+      };
+
+      window.addEventListener('scroll', updateActiveNav, { passive: true });
+    });
+  </script>
+</body>
+</html>
